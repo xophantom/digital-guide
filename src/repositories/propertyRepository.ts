@@ -26,6 +26,8 @@ export function createPropertyRepository(db: RepoDb) {
         .select()
         .from(propertyRules)
         .where(eq(propertyRules.propertyId, property.id));
+      if (!access || !rules) return null;
+
       const images = await db
         .select()
         .from(propertyImages)

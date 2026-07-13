@@ -24,8 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="pt-BR"
+      className={`${fraunces.variable} ${inter.variable} h-full`}
+    >
+      <body className="min-h-full antialiased">{children}</body>
     </html>
   );
 }
