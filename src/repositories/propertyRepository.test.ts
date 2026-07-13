@@ -75,4 +75,28 @@ describe("propertyRepository.getByCode", () => {
     const repo = createPropertyRepository(db);
     expect(await repo.getByCode("XXX999")).toBeNull();
   });
+
+  it("retorna null quando faltam as linhas 1:1 de acesso/regras", async () => {
+    await db.insert(properties).values({
+      code: "PARTIAL1",
+      name: "Sem relações",
+      propertyType: "Apartamento",
+      category: "beach",
+      bedroomQuantity: 1,
+      bathroomQuantity: 1,
+      guestCapacity: 2,
+      street: "R",
+      number: "1",
+      complement: null,
+      neighborhood: "N",
+      city: "C",
+      state: "SC",
+      postalCode: "0",
+      amenities: {},
+      hostName: "H",
+      hostPhone: "P",
+    });
+    const repo = createPropertyRepository(db);
+    expect(await repo.getByCode("PARTIAL1")).toBeNull();
+  });
 });
