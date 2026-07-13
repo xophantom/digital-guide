@@ -17,6 +17,13 @@ import {
   Bed,
   Bath,
   Users,
+  Tv,
+  Snowflake,
+  CookingPot,
+  WashingMachine,
+  ChevronsUpDown,
+  Sun,
+  Flame,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,6 +46,13 @@ export const ICONS = {
   bed: Bed,
   bath: Bath,
   guests: Users,
+  tv: Tv,
+  ac: Snowflake,
+  kitchen: CookingPot,
+  washer: WashingMachine,
+  elevator: ChevronsUpDown,
+  balcony: Sun,
+  grill: Flame,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
