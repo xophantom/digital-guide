@@ -14,7 +14,7 @@ export function SectionHeader({
     <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Icon name={icon} size={18} className="text-(--accent)" />
-        <h3 className="font-display text-lg tracking-tight">{title}</h3>
+        <h2 className="font-display text-lg tracking-tight">{title}</h2>
       </div>
       {badge}
     </div>

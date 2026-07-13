@@ -22,7 +22,7 @@ export function CopyButton({
     <button
       type="button"
       onClick={copy}
-      aria-label={label}
+      aria-live="polite"
       className="inline-flex items-center gap-1.5 rounded-lg border border-(--accent-soft) bg-(--accent-soft) px-2.5 py-1.5 text-[11px] font-semibold text-(--accent)"
     >
       <Icon name="copy" size={13} />
