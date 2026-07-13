@@ -26,7 +26,8 @@ describe("experienceGuideSchema", () => {
   });
 
   it("rejeita quando falta welcomeMessage", () => {
-    const { welcomeMessage, ...rest } = valid;
-    expect(() => experienceGuideSchema.parse(rest)).toThrow();
+    const invalid: Partial<typeof valid> = { ...valid };
+    delete invalid.welcomeMessage;
+    expect(() => experienceGuideSchema.parse(invalid)).toThrow();
   });
 });

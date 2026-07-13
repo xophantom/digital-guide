@@ -11,6 +11,9 @@ import { SEED_PROPERTIES } from "@/src/db/seed-data";
 
 async function uploadImage(code: string, url: string, i: number): Promise<string> {
   const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`falha ao baixar imagem ${url}: HTTP ${res.status}`);
+  }
   const blob = await res.blob();
   const { url: blobUrl } = await put(`properties/${code}/${i}.jpg`, blob, {
     access: "public",
