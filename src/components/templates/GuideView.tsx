@@ -12,7 +12,7 @@ export function GuideView({ property }: { property: Property }) {
         <span className="font-display text-sm">
           <b className="font-semibold">Seazone</b> · Guia do Hóspede
         </span>
-        <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-semibold tracking-wide text-[var(--accent)]">
+        <span className="rounded-full bg-(--accent-soft) px-2.5 py-1 text-[10px] font-semibold tracking-wide text-(--accent)">
           {property.code}
         </span>
       </header>

@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <main className="mx-auto flex min-h-full max-w-2xl flex-col justify-center gap-8 px-6 py-16">
       <div>
-        <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent)]">
+        <p className="text-xs uppercase tracking-[0.22em] text-(--accent)">
           Seazone
         </p>
         <h1 className="mt-2 font-display text-4xl leading-tight tracking-tight">
@@ -31,7 +31,7 @@ export default function Home() {
             className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3 transition hover:-translate-y-0.5"
           >
             <span className="text-sm">{s.label}</span>
-            <span className="font-[family-name:var(--font-inter)] text-xs text-[var(--accent)]">
+            <span className="font-(family-name:--font-inter) text-xs text-(--accent)">
               /{s.code}
             </span>
           </Link>

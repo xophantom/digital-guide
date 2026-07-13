@@ -19,7 +19,7 @@ export function PropertyHero({ property }: { property: Property }) {
           />
         </div>
       ) : null}
-      <p className="mt-4 text-[11px] uppercase tracking-[0.22em] text-[var(--accent)]">
+      <p className="mt-4 text-[11px] uppercase tracking-[0.22em] text-(--accent)">
         {property.address.neighborhood} · {property.address.city} —{" "}
         {property.address.state}
       </p>

@@ -13,7 +13,7 @@ export function SectionHeader({
   return (
     <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <Icon name={icon} size={18} className="text-[var(--accent)]" />
+        <Icon name={icon} size={18} className="text-(--accent)" />
         <h3 className="font-display text-lg tracking-tight">{title}</h3>
       </div>
       {badge}

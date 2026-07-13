@@ -18,7 +18,7 @@ export function Field({
         <SectionLabel>{label}</SectionLabel>
         <div
           className={`mt-1 text-sm text-ink ${
-            mono ? "font-[family-name:var(--font-inter)] tracking-tight" : ""
+            mono ? "font-(family-name:--font-inter) tracking-tight" : ""
           }`}
         >
           {value}
