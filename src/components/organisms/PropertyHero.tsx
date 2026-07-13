@@ -15,7 +15,7 @@ export function PropertyHero({ property }: { property: Property }) {
             fill
             sizes="(max-width: 640px) 100vw, 640px"
             className="object-cover"
-            priority
+            preload
           />
         </div>
       ) : null}

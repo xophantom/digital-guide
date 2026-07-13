@@ -19,4 +19,36 @@ describe("GuideView", () => {
     expect(screen.getByText(/Contato/i)).toBeInTheDocument();
     expect(screen.getByText("floripa2024")).toBeInTheDocument();
   });
+
+  it("renderiza sem quebrar quando não há imagens e campos opcionais são nulos", () => {
+    render(
+      <GuideView
+        property={makeProperty({
+          images: [],
+          access: {
+            wifiNetwork: "SeaHome_FLN001",
+            wifiPassword: "floripa2024",
+            isSelfCheckin: true,
+            accessType: "smart_lock",
+            accessInstructions: "Use o código 4521 na fechadura eletrônica",
+            propertyPassword: "4521",
+            hasParkingSpot: false,
+            parkingIdentifier: null,
+            parkingInstructions: null,
+          },
+          address: {
+            street: "Rua Lauro Linhares",
+            number: "589",
+            complement: null,
+            neighborhood: "Trindade",
+            city: "Florianópolis",
+            state: "SC",
+            postalCode: "88036-001",
+          },
+        })}
+      />,
+    );
+    expect(screen.getByText(/Contato/i)).toBeInTheDocument();
+    expect(screen.getByText("Ana Paula")).toBeInTheDocument();
+  });
 });
