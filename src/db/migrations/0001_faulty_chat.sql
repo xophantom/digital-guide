@@ -1,0 +1,1 @@
+ALTER TABLE "experience_guides" ADD COLUMN "claimed_at" timestamp;

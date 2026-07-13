@@ -84,4 +84,5 @@ export const experienceGuides = pgTable("experience_guides", {
   model: text("model"),
   error: text("error"),
   generatedAt: timestamp("generated_at"),
+  claimedAt: timestamp("claimed_at"),
 });
