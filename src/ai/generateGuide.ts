@@ -5,7 +5,7 @@ import { buildGuidePrompt } from "@/src/ai/prompts/guidePrompt";
 import { objectChunks } from "@/src/ai/mockStream";
 import type { Property } from "@/src/domain/property";
 import type { NearbyPlaces } from "@/src/places/types";
-import type { AIProvider } from "@/src/ai/provider";
+import { DEFAULT_GUIDE_MODEL, type AIProvider } from "@/src/ai/provider";
 
 export type GuidePersistRepo = {
   save: (propertyId: string, guide: ExperienceGuide, model: string) => Promise<void>;
@@ -26,17 +26,36 @@ export function streamGuide({
   persist: boolean;
 }) {
   const { system, prompt } = buildGuidePrompt(property, places, new Date());
+
+  // onFinish (falha de validação de schema) e onError (falha da própria
+  // chamada ao model, ex.: doStream rejeitando por rede/401/429) são classes
+  // de falha distintas e, na prática, mutuamente exclusivas — mas o flag
+  // abaixo garante que repo.fail nunca seja chamado duas vezes para a mesma
+  // geração, caso as duas rotas acabem se sobrepondo.
+  let failed = false;
+  const persistFailure = async (error: unknown) => {
+    if (!persist || failed) return;
+    failed = true;
+    await repo.fail(property.id, String(error ?? "geração falhou"));
+  };
+
   return streamObject({
     model: provider.guideModel,
     schema: experienceGuideSchema,
     system,
     prompt,
+    // Dispara quando a chamada ao model falha (network, 401, 429, timeout).
+    // Sem isso, esse tipo de falha nunca chega ao onFinish: o registro fica
+    // "pending" para sempre e result.object nunca resolve.
+    onError: async ({ error }) => {
+      await persistFailure(error);
+    },
     onFinish: async ({ object, error }) => {
       if (!persist) return;
       if (object) {
-        await repo.save(property.id, object, process.env.AI_MODEL_GUIDE ?? "claude-opus-4-8");
+        await repo.save(property.id, object, process.env.AI_MODEL_GUIDE ?? DEFAULT_GUIDE_MODEL);
       } else {
-        await repo.fail(property.id, String(error ?? "geração falhou"));
+        await persistFailure(error);
       }
     },
   });

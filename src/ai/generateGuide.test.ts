@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { simulateReadableStream } from "ai";
+import { MockLanguageModelV4 } from "ai/test";
 import { streamGuide, streamPersistedGuide } from "@/src/ai/generateGuide";
 import { getAIProvider } from "@/src/ai/provider";
 import { makeProperty } from "@/src/test/fixtures";
 import { FAKE_NEARBY } from "@/src/places/fakePlaces";
 import { FAKE_GUIDE } from "@/src/ai/fakeGuide";
+import { objectChunks } from "@/src/ai/mockStream";
 
 const original = process.env.AI_PROVIDER;
 afterEach(() => {
@@ -55,6 +58,49 @@ describe("streamGuide", () => {
     await result.object.catch(() => undefined);
     expect(repo.save).not.toHaveBeenCalled();
     expect(repo.fail).not.toHaveBeenCalled();
+  });
+
+  it("persiste (fail) quando a resposta não valida contra o schema (onFinish)", async () => {
+    const repo = spyRepo();
+    // Texto sintaticamente válido ({}), mas sem os campos exigidos pelo schema.
+    const model = new MockLanguageModelV4({
+      doStream: async () => ({
+        stream: simulateReadableStream({ chunks: objectChunks({}) }),
+      }),
+    });
+    const result = streamGuide({
+      property: makeProperty(),
+      places: FAKE_NEARBY,
+      provider: { guideModel: model },
+      repo,
+      persist: true,
+    });
+    await drain(result.partialObjectStream);
+    await result.object.catch(() => undefined);
+    expect(repo.fail).toHaveBeenCalledTimes(1);
+    expect(repo.save).not.toHaveBeenCalled();
+  });
+
+  it("persiste (fail) quando doStream rejeita — falha de chamada, não de validação (onError)", async () => {
+    const repo = spyRepo();
+    const model = new MockLanguageModelV4({
+      doStream: async () => {
+        throw new Error("falha de rede simulada");
+      },
+    });
+    const result = streamGuide({
+      property: makeProperty(),
+      places: FAKE_NEARBY,
+      provider: { guideModel: model },
+      repo,
+      persist: true,
+    });
+    // Nesta classe de falha o onFinish nunca dispara e result.object nunca
+    // resolve (trava) — quem sinaliza é o onError, que só roda ao drenarmos
+    // um stream que carregue o chunk "error" (fullStream).
+    await drain(result.fullStream);
+    expect(repo.fail).toHaveBeenCalledTimes(1);
+    expect(repo.save).not.toHaveBeenCalled();
   });
 });
 
