@@ -13,4 +13,7 @@ describe("buildChatPrompt", () => {
   it("NÃO embute os dados (a senha do WiFi vem da tool, não do prompt)", () => {
     expect(p).not.toContain("floripa2024");
   });
+  it("proíbe emojis nas respostas", () => {
+    expect(p.toLowerCase()).toMatch(/não use emojis|nao use emojis|sem emojis/);
+  });
 });

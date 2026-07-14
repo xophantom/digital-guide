@@ -20,6 +20,9 @@ export function RulesSection({ property }: { property: Property }) {
         <RuleItem icon="baby">
           {r.suitableForChildren ? "Ok p/ crianças" : "Sem crianças"}
         </RuleItem>
+        <RuleItem icon="events" className="sm:col-span-2">
+          {r.eventsPermitted ? "Festas/eventos ok" : "Sem festas/eventos"}
+        </RuleItem>
       </div>
     </section>
   );
