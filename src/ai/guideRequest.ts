@@ -8,8 +8,12 @@ export type PropertyRepo = ReturnType<typeof createPropertyRepository>;
 export type GuideRepo = ReturnType<typeof createGuideRepository>;
 
 // Caminho perdedor: intervalo entre tentativas e prazo máximo de espera pelo vencedor do claim.
-const POLL_INTERVAL_MS = 1_000;
-const POLL_TIMEOUT_MS = 30_000;
+// POLL_TIMEOUT_MS precisa ser >= ao limiar de stale-claim de 90s (guideRepository.ts,
+// claimForGeneration) e folgado o bastante para uma geração real do model terminar —
+// caso contrário o perdedor cai em 503 antes do vencedor sequer estourar o próprio prazo
+// de claim, mesmo quando a geração está progredindo normalmente.
+export const POLL_INTERVAL_MS = 1_000;
+export const POLL_TIMEOUT_MS = 95_000;
 
 export async function handleGuideRequest({
   code,
