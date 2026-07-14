@@ -16,7 +16,7 @@ function lista(places: Place[]): string {
 }
 
 // Bloco por categoria: se há lugares reais → descrever ESSES; senão → fallback (sugerir notórios).
-function bloco(titulo: string, min: number, places: Place[], instrucaoVazia: string): string {
+function bloco(titulo: string, places: Place[], instrucaoVazia: string): string {
   if (places.length > 0) {
     return `${titulo} — descreva EXATAMENTE estes lugares reais (não substitua nem invente outros), escrevendo uma breve descrição e refinando a distância:\n${lista(places)}`;
   }
@@ -46,11 +46,11 @@ export function buildGuidePrompt(
     ``,
     `Escreva uma mensagem de boas-vindas personalizada para essa localização (2-3 frases).`,
     ``,
-    bloco("RESTAURANTES (4 a 5)", 4, places.restaurants, "sugira 4-5 restaurantes reais e notórios próximos ao endereço."),
+    bloco("RESTAURANTES (4 a 5)", places.restaurants, "sugira 4-5 restaurantes reais e notórios próximos ao endereço."),
     ``,
-    bloco("ATRAÇÕES (3 a 4)", 3, places.attractions, "sugira 3-4 atrações reais próximas ao endereço."),
+    bloco("ATRAÇÕES (3 a 4)", places.attractions, "sugira 3-4 atrações reais próximas ao endereço."),
     ``,
-    bloco("ESSENCIAIS (farmácia, supermercado e hospital)", 1, essenciais, "sugira uma farmácia, um supermercado e um hospital reais próximos, com o tipo de cada."),
+    bloco("ESSENCIAIS (farmácia, supermercado e hospital)", essenciais, "sugira uma farmácia, um supermercado e um hospital reais próximos, com o tipo de cada."),
     ``,
     `Dica sazonal: escreva uma dica relevante para ${MESES[mes]} (${estacaoBrasil(mes)} no Brasil), considerando o clima típico da região.`,
   ].join("\n");

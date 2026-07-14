@@ -47,7 +47,11 @@ export function streamGuide({
     // Dispara quando a chamada ao model falha (network, 401, 429, timeout).
     // Sem isso, esse tipo de falha nunca chega ao onFinish: o registro fica
     // "pending" para sempre e result.object nunca resolve.
+    // Este onError substitui o console.error padrão do AI SDK, então logamos
+    // aqui sempre (persist=false ou guard já disparado não devem silenciar
+    // o erro) — só a persistência em repo.fail respeita o guard "no máximo uma vez".
     onError: async ({ error }) => {
+      console.error("[guia] falha na geração:", error);
       await persistFailure(error);
     },
     onFinish: async ({ object, error }) => {
