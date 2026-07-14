@@ -14,6 +14,8 @@ describe("CopyButton", () => {
       .mockResolvedValue(undefined);
     await user.click(screen.getByRole("button", { name: /copiar senha/i }));
     expect(writeText).toHaveBeenCalledWith("floripa2024");
-    expect(await screen.findByText(/copiado/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /copiado/i }),
+    ).toBeInTheDocument();
   });
 });

@@ -13,16 +13,16 @@ export function Field({
   copyable?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <div>
-        <SectionLabel>{label}</SectionLabel>
-        <div
-          className={`mt-1 text-sm text-ink ${mono ? "font-mono" : ""}`}
-        >
+    <div>
+      <SectionLabel>{label}</SectionLabel>
+      <div className="mt-1 flex items-center gap-2">
+        <span className={`text-sm text-ink ${mono ? "font-mono" : ""}`}>
           {value}
-        </div>
+        </span>
+        {copyable ? (
+          <CopyButton value={value} label={`Copiar ${label}`} />
+        ) : null}
       </div>
-      {copyable ? <CopyButton value={value} label={`Copiar ${label}`} /> : null}
     </div>
   );
 }
