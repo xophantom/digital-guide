@@ -15,6 +15,11 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://localhost:3000",
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
+    env: {
+      DATA_PROVIDER: "fake",
+      AI_PROVIDER: "fake",
+      PLACES_PROVIDER: "fake",
+    },
   },
 });
