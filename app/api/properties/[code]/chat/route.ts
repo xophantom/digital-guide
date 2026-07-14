@@ -10,13 +10,18 @@ export async function POST(
   { params }: { params: Promise<{ code: string }> },
 ) {
   const { code } = await params;
-  let body: { messages: UIMessage[] };
+  let messages: UIMessage[];
   try {
-    body = await req.json();
+    const body: unknown = await req.json();
+    // body pode ser JSON válido e ainda assim não ser um objeto (ex.: null),
+    // então o formato precisa ser checado antes de desestruturar.
+    if (typeof body !== "object" || body === null) {
+      return new Response("Requisição inválida", { status: 400 });
+    }
+    ({ messages } = body as { messages: UIMessage[] });
   } catch {
     return new Response("Requisição inválida", { status: 400 });
   }
-  const { messages } = body;
   return handleChatRequest({
     code,
     messages,
