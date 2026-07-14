@@ -21,7 +21,7 @@ export function streamGuide({
 }: {
   property: Property;
   places: NearbyPlaces;
-  provider: AIProvider;
+  provider: Pick<AIProvider, "guideModel">;
   repo: GuidePersistRepo;
   persist: boolean;
 }) {

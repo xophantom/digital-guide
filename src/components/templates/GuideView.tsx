@@ -5,6 +5,7 @@ import { RulesSection } from "@/src/components/organisms/RulesSection";
 import { ContactSection } from "@/src/components/organisms/ContactSection";
 import { ExperienceGuide } from "@/src/components/organisms/ExperienceGuide";
 import { ExperienceGuideGenerator } from "@/src/components/organisms/ExperienceGuideGenerator";
+import { ChatFab } from "@/src/components/organisms/ChatFab";
 import type { Property } from "@/src/domain/property";
 import type { GuideRecord } from "@/src/repositories/guideRepository";
 
@@ -36,6 +37,7 @@ export function GuideView({
         )}
         <ContactSection property={property} />
       </main>
+      <ChatFab code={property.code} />
     </div>
   );
 }
