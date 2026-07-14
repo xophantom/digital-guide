@@ -31,7 +31,7 @@ export function ChatPanel({
   code: string;
   onClose: () => void;
 }) {
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, error, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: `/api/properties/${code}/chat`,
     }),
@@ -107,6 +107,22 @@ export function ChatPanel({
           <ChatBubble role="assistant">
             <StreamingCursor />
           </ChatBubble>
+        ) : null}
+        {error ? (
+          <div
+            role="alert"
+            className="rounded-2xl bg-red-50 px-3 py-2.5 text-sm text-red-800"
+          >
+            <p>Ops, não consegui responder agora.</p>
+            <button
+              type="button"
+              onClick={() => regenerate()}
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800 transition-colors hover:bg-red-200"
+            >
+              <Icon name="retry" size={13} />
+              Tentar novamente
+            </button>
+          </div>
         ) : null}
       </div>
 

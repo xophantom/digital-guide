@@ -22,11 +22,11 @@ export function CopyButton({
     <button
       type="button"
       onClick={copy}
-      aria-live="polite"
-      className="inline-flex items-center gap-1.5 rounded-lg border border-(--accent-soft) bg-(--accent-soft) px-2.5 py-1.5 text-[11px] font-semibold text-(--accent)"
+      aria-label={copied ? "Copiado" : label}
+      title={copied ? "Copiado" : label}
+      className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted transition-colors hover:bg-(--accent-soft) hover:text-(--accent)"
     >
-      <Icon name="copy" size={13} />
-      {copied ? "Copiado" : label}
+      <Icon name={copied ? "check" : "copy"} size={15} />
     </button>
   );
 }

@@ -14,7 +14,9 @@ describe("organismos do guia", () => {
     expect(
       screen.getByRole("heading", { name: /Apartamento Beira-Mar/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Trindade · Florianópolis/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Apartamento · Trindade · Florianópolis/i),
+    ).toBeInTheDocument();
     expect(screen.getByText(/2 quartos/i)).toBeInTheDocument();
     expect(screen.getByText("Wi-Fi")).toBeInTheDocument();
   });
@@ -25,12 +27,16 @@ describe("organismos do guia", () => {
     expect(screen.getByText("floripa2024")).toBeInTheDocument();
   });
 
-  it("RulesSection reflete as regras (sem pets, não fumantes, festas/eventos)", () => {
+  it("RulesSection mostra check-in/out e o status de cada política (com bebês e eventos)", () => {
     render(<RulesSection property={property} />);
-    expect(screen.getByText(/sem pets/i)).toBeInTheDocument();
-    expect(screen.getByText(/não fumantes/i)).toBeInTheDocument();
-    expect(screen.getByText(/check-in 15:00/i)).toBeInTheDocument();
-    expect(screen.getByText(/sem festas\/eventos/i)).toBeInTheDocument();
+    expect(screen.getByText("15:00")).toBeInTheDocument();
+    expect(screen.getByText("11:00")).toBeInTheDocument();
+    expect(screen.getByText("Animais de estimação")).toBeInTheDocument();
+    expect(screen.getByText("Bebês")).toBeInTheDocument();
+    expect(screen.getByText("Festas e eventos")).toBeInTheDocument();
+    // fixture: pets/fumar/festas não permitidos; crianças/bebês adequados
+    expect(screen.getAllByText("Não permitido")).toHaveLength(3);
+    expect(screen.getAllByText("Adequado")).toHaveLength(2);
   });
 
   it("ContactSection mostra anfitrião e endereço completo (com CEP)", () => {
