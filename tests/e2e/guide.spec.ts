@@ -16,8 +16,9 @@ test.describe("guia do hóspede — /FLN001", () => {
     await expect(page.getByText("floripa2024")).toBeVisible();
 
     // Regras da estadia
-    await expect(page.getByText("Não fumantes")).toBeVisible();
-    await expect(page.getByText("Sem pets")).toBeVisible();
+    await expect(page.getByText("Animais de estimação")).toBeVisible();
+    await expect(page.getByText("Fumar")).toBeVisible();
+    await expect(page.getByText("Festas e eventos")).toBeVisible();
 
     // Contato
     await expect(page.getByText("Ana Paula")).toBeVisible();
