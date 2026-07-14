@@ -9,4 +9,10 @@ describe("HostCard", () => {
     expect(screen.getByText("AP")).toBeInTheDocument();
     expect(screen.getByText(/48/)).toBeInTheDocument();
   });
+
+  it("telefone é um link de WhatsApp (só dígitos, sem +)", () => {
+    render(<HostCard name="Ana Paula" phone="+5548991234567" />);
+    const link = screen.getByRole("link", { name: /whatsapp de ana paula/i });
+    expect(link).toHaveAttribute("href", "https://wa.me/5548991234567");
+  });
 });
