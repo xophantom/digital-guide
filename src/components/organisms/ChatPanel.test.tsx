@@ -103,4 +103,51 @@ describe("ChatPanel", () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("mostra o cursor de streaming colado na última mensagem quando status é streaming; some quando ready", () => {
+    const messages = [
+      { id: "user-1", role: "user", parts: [{ type: "text", text: "Oi" }] },
+      {
+        id: "assistant-1",
+        role: "assistant",
+        parts: [{ type: "text", text: "Olá" }],
+      },
+    ] as unknown as UIMessage[];
+
+    useChatMock.mockReturnValue({ messages, sendMessage: vi.fn(), status: "streaming" });
+    const { container, rerender } = render(
+      <ChatPanel code="FLN001" onClose={vi.fn()} />,
+    );
+
+    expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+
+    useChatMock.mockReturnValue({ messages, sendMessage: vi.fn(), status: "ready" });
+    rerender(<ChatPanel code="FLN001" onClose={vi.fn()} />);
+
+    expect(container.querySelector(".animate-pulse")).not.toBeInTheDocument();
+  });
+
+  it("mostra a bolha de espera (cursor) quando status é submitted, antes de qualquer texto chegar", () => {
+    useChatMock.mockReturnValue({
+      messages: [{ id: "user-1", role: "user", parts: [{ type: "text", text: "Oi" }] }],
+      sendMessage: vi.fn(),
+      status: "submitted",
+    });
+
+    const { container } = render(<ChatPanel code="FLN001" onClose={vi.fn()} />);
+
+    expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+  });
+
+  it("digitar no campo de texto e enviar (submit do form) chama sendMessage com o texto digitado", async () => {
+    const sendMessage = vi.fn();
+    useChatMock.mockReturnValue({ messages: [], sendMessage, status: "ready" });
+    const user = userEvent.setup();
+
+    render(<ChatPanel code="FLN001" onClose={vi.fn()} />);
+    await user.type(screen.getByLabelText("Sua pergunta"), "Tem estacionamento?");
+    await user.click(screen.getByRole("button", { name: /enviar pergunta/i }));
+
+    expect(sendMessage).toHaveBeenCalledWith({ text: "Tem estacionamento?" });
+  });
 });
