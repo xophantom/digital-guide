@@ -4,7 +4,7 @@ Teste técnico Seazone (AI Builder). A Seazone gerencia milhares de imóveis de 
 
 Este projeto reconstrói o Guia Digital para que **cada imóvel tenha um link único** (`/[code]`, ex.: `/FLN001`) com conteúdo real e específico daquele imóvel:
 
-- **Guia estático**: fotos, capacidade, amenidades, WiFi, instruções de acesso, regras da estadia e contato do anfitrião — vindo do banco de dados.
+- **Guia estático**: galeria de fotos, capacidade, amenidades, WiFi, instruções de acesso, regras da estadia, contato do anfitrião (link direto de WhatsApp) e mapa da localização — vindo do banco de dados.
 - **Guia de Experiências por IA**: mensagem de boas-vindas, restaurantes, atrações e serviços essenciais **realmente próximos** ao endereço do imóvel, com dica sazonal. Não é o modelo "chutando" nomes de restaurante — a aplicação geocodifica o endereço e busca lugares reais no OpenStreetMap antes de pedir para a IA descrevê-los (ver decisão D5 abaixo). O guia é gerado uma única vez e persistido.
 - **Assistente Virtual (chat)**: responde em streaming, com tool-calling para buscar os dados exatos do imóvel e do guia (nunca parafraseando ou inventando — ver decisão D7).
 
@@ -77,6 +77,12 @@ Em ambos, IA e rede são mockadas na fronteira (`AIProvider`, `PlacesProvider`) 
 
 **Limitação assumida conscientemente**: o e2e do chat roda com `AI_PROVIDER=fake`, cujo modelo emite um texto canônico fixo ("Resposta de teste."). O e2e prova o **fluxo** (enviar pergunta → streaming aparece → tool é chamada), não a **correção** das 4 respostas esperadas pelo desafio. Essa correção — a senha do WiFi certa, a regra de pet certa, etc. — é validada manualmente contra o modelo real após o deploy, porque depende do Claude de fato interpretando a pergunta e chamando a tool certa.
 
+### Evidência
+
+![Vitest — 35 arquivos, 112 testes passando](assets/screenshots/testes-unit.png)
+
+![Playwright e2e — 8 cenários (chromium + mobile) passando](assets/screenshots/testes-e2e.png)
+
 ---
 
 ## Arquitetura
@@ -96,16 +102,14 @@ Um segundo par de repositórios (`fakePropertyRepository`, `fakeGuideRepository`
 
 ### UI (Atomic Design)
 
-Componentes organizados em `atoms/molecules/organisms/templates` (`src/components/`). Direção visual "Editorial Luxe" (serif Fraunces para títulos + Inter no corpo), com **acento de cor adaptativo** por `property.category` (`src/theme/accent.ts` — praia → teal, serra → verde, capital → clay), amarrando a identidade visual ao tema de personalização por IA. Ícones via `lucide-react` encapsulados num átomo `Icon` com mapa central de domínio (sem emojis). Mobile-first, imagens via `next/image`.
+Componentes organizados em `atoms/molecules/organisms/templates` (`src/components/`). Direção visual "Editorial Luxe" (serif Fraunces para títulos, Inter no corpo e **JetBrains Mono** para credenciais — senha do WiFi e códigos de acesso, onde a mono desambigua `0/O` e `1/l/I`), com **acento de cor adaptativo** por `property.category` (`src/theme/accent.ts` — praia → teal, serra → verde, capital → clay), amarrando a identidade visual ao tema de personalização por IA. Ícones via `lucide-react` encapsulados num átomo `Icon` com mapa central de domínio (sem emojis). Inclui **galeria de fotos** em carrossel (scroll-snap), **mini-mapa** da localização (embed do Google) e **contato acionável** (WhatsApp do anfitrião). Mobile-first, imagens via `next/image`.
 
 ---
 
 ## Decisões técnicas (X e não Y)
 
-Esta é a seção mais importante do README — o log de decisões arquiteturais do projeto, com as alternativas descartadas e o porquê.
-
 | #   | Decisão                        | Escolhido                                                                                                                                                                 | Alternativa descartada                                       | Por quê                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | D1  | ORM / dados                    | **Drizzle ORM** + driver Neon serverless                                                                                                                                  | Prisma; SQL puro                                             | Type-safe, leve, SQL-first, migrations e seed limpos e ótimo em serverless. Prisma é mais pesado (engine binário, atrito serverless); SQL puro geraria boilerplate e mapeamento manual.                                                                                                                                                                                                                                                                                                                                                            |
 | D2  | Banco                          | **Postgres (Neon)** via Vercel                                                                                                                                            | SQLite; mock/arquivo                                         | Relacional real, serverless, integra direto com a Vercel; alinhado ao exemplo de dados do desafio.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | D3  | Camada de IA                   | **Vercel AI SDK v7** (`@ai-sdk/anthropic`)                                                                                                                                | `assistant-ui`; SDK da Anthropic puro                        | Camada única para `streamObject` (guia) e `streamText`/`useChat` (chat), streaming nativo no Next, com UI 100% custom. `assistant-ui` deixaria o visual menos autoral; o SDK puro da Anthropic reinventaria streaming/estado do chat na mão.                                                                                                                                                                                                                                                                                                       |
@@ -118,6 +122,7 @@ Esta é a seção mais importante do README — o log de decisões arquiteturais
 | D10 | Direção visual                 | **Editorial Luxe** (Fraunces + Inter) com **acento adaptativo por destino**                                                                                               | Aurora Dark; Minimal Swiss; cor fixa                         | Elegante e acolhedor (hotel boutique) com craft técnico. O acento adaptativo (praia → teal, serra → verde, capital → clay) amarra a cor ao tema de personalização por IA.                                                                                                                                                                                                                                                                                                                                                                          |
 | D11 | Ícones                         | **Lucide** (`lucide-react`) via átomo `Icon` + mapa central                                                                                                               | Emojis genéricos; Phosphor                                   | Set consistente de line-icons, elegante, tree-shakeable, padrão do ecossistema. Emojis renderizam diferente por sistema operacional e não têm cara de produto.                                                                                                                                                                                                                                                                                                                                                                                     |
 | D12 | Testes                         | **Vitest + Playwright**, IA e rede mockadas no boundary (`AIProvider`/`PlacesProvider` injetáveis)                                                                        | Testes com IA/rede reais; e2e-first                          | Determinístico, rápido e sem custo/flakiness em CI. Força injeção de dependência da IA e dos lugares (arquitetura limpa).                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| D13 | Mini-mapa da localização       | **Embed do Google Maps sem API key** (`iframe` `output=embed`)                                                                                                            | Embed API oficial (com key); embed do OpenStreetMap          | Mostra a localização sem custo nem setup: keyless, sem billing (coerente com D5) e sem precisar de `lat/lng` no domínio. É só **exibição** — o _grounding_ dos lugares continua no OSM (D5). A Embed API exigiria key + projeto no Google; o embed do OSM precisaria de coordenadas.                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -140,24 +145,3 @@ src/
   test/          # fixtures e helpers de teste
 tests/e2e/       # Playwright (guia, 404, geração, chat)
 ```
-
----
-
-## Deploy
-
-O projeto foi desenhado para o par Vercel + Neon + Blob:
-
-1. **Importar o repositório** no dashboard da Vercel (ou `vercel` CLI), framework Next.js detectado automaticamente.
-2. **Banco**: adicionar a integração de Postgres (Neon) ao projeto na Vercel — isso provisiona `DATABASE_URL` automaticamente.
-3. **Blob**: adicionar a integração Vercel Blob ao projeto — isso provisiona `BLOB_READ_WRITE_TOKEN`.
-4. **Variáveis de ambiente** (Project Settings → Environment Variables), além das provisionadas acima:
-   - `ANTHROPIC_API_KEY`
-   - `AI_MODEL_GUIDE` (default `claude-opus-4-8`)
-   - `AI_MODEL_CHAT` (default `claude-sonnet-5`)
-   - `AI_PROVIDER=anthropic`
-   - `PLACES_PROVIDER=overpass`
-   - **Não** definir `DATA_PROVIDER` em produção — o app deve usar o banco real.
-5. **Migrations**: `DATABASE_URL=<neon> npm run db:migrate`.
-6. **Seed**: `DATABASE_URL=<neon> BLOB_READ_WRITE_TOKEN=<token> npm run db:seed` (sobe as fotos para o Blob e insere os imóveis de exemplo).
-7. **Deploy** e smoke test manual: `/FLN001` e `/GRM001` (guia, geração real do Guia de Experiências, chat respondendo as 4 perguntas do desafio) e `/XXX999` (404 amigável).
-8. Atualizar este README com a URL pública.
