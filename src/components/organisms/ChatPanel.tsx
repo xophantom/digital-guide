@@ -70,7 +70,11 @@ export function ChatPanel({
         </button>
       </header>
 
-      <div className="flex-1 space-y-2 overflow-y-auto bg-paper px-4 py-3">
+      <div
+        role="log"
+        aria-live="polite"
+        className="flex-1 space-y-2 overflow-y-auto bg-paper px-4 py-3"
+      >
         {messages.length === 0 ? (
           <p className="text-sm text-muted">
             Pergunte sobre o WiFi, check-in, regras ou lugares perto do imóvel.

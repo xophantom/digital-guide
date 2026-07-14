@@ -139,6 +139,18 @@ describe("ChatPanel", () => {
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
   });
 
+  it("anuncia a lista de mensagens a leitores de tela (role=log, aria-live=polite)", () => {
+    useChatMock.mockReturnValue({
+      messages: [],
+      sendMessage: vi.fn(),
+      status: "ready",
+    });
+
+    render(<ChatPanel code="FLN001" onClose={vi.fn()} />);
+
+    expect(screen.getByRole("log")).toHaveAttribute("aria-live", "polite");
+  });
+
   it("digitar no campo de texto e enviar (submit do form) chama sendMessage com o texto digitado", async () => {
     const sendMessage = vi.fn();
     useChatMock.mockReturnValue({ messages: [], sendMessage, status: "ready" });
