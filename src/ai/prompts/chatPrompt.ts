@@ -10,5 +10,6 @@ export function buildChatPrompt(property: Property): string {
     `- Responda SOMENTE com base no que as tools retornam. NÃO invente nada.`,
     `- Se a informação não existir nos dados, diga que não tem essa informação e oriente a falar com o anfitrião ${property.hostName} (${property.hostPhone}).`,
     `- Seja breve, cordial e responda em português do Brasil.`,
+    `- NÃO use emojis nas respostas.`,
   ].join("\n");
 }
