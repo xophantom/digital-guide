@@ -1,9 +1,5 @@
 import Link from "next/link";
-
-const SAMPLES = [
-  { code: "FLN001", label: "Apartamento Beira-Mar · Florianópolis" },
-  { code: "GRM001", label: "Chalé Serra · Gramado" },
-];
+import { SEED_PROPERTIES } from "@/src/db/seed-data";
 
 export default function Home() {
   return (
@@ -22,18 +18,16 @@ export default function Home() {
       </div>
       <div className="flex flex-col gap-3">
         <p className="text-[10px] uppercase tracking-[0.13em] text-muted">
-          Exemplos
+          Imóveis
         </p>
-        {SAMPLES.map((s) => (
+        {SEED_PROPERTIES.map((p) => (
           <Link
-            key={s.code}
-            href={`/${s.code}`}
-            className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3 transition hover:-translate-y-0.5"
+            key={p.code}
+            href={`/${p.code}`}
+            className="flex items-center justify-between gap-3 rounded-xl border border-line bg-card px-4 py-3 transition hover:-translate-y-0.5"
           >
-            <span className="text-sm">{s.label}</span>
-            <span className="font-(family-name:--font-inter) text-xs text-(--accent)">
-              /{s.code}
-            </span>
+            <span className="text-sm">{p.name}</span>
+            <span className="font-mono text-xs text-(--accent)">/{p.code}</span>
           </Link>
         ))}
       </div>
