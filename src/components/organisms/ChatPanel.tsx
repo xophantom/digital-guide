@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Icon } from "@/src/components/atoms/Icon";
+import { RichText } from "@/src/components/atoms/RichText";
 import { ChatBubble } from "@/src/components/molecules/ChatBubble";
 import { messageText } from "@/src/ai/messageText";
 
@@ -52,19 +53,29 @@ export function ChatPanel({
   }
 
   return (
-    <div className="fixed inset-x-3 bottom-3 z-30 flex max-h-[75vh] flex-col overflow-hidden rounded-2xl border border-line bg-card shadow-2xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-96">
+    <div className="fixed inset-0 z-30 flex flex-col overflow-hidden bg-card shadow-2xl sm:inset-auto sm:right-5 sm:bottom-5 sm:h-[620px] sm:max-h-[calc(100vh-2.5rem)] sm:w-96 sm:rounded-2xl sm:border sm:border-line">
       <header className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-(--accent)" aria-hidden />
-          <span className="font-display text-sm font-semibold">
-            Assistente do imóvel
+        <div className="flex items-center gap-2.5">
+          <span
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-(--accent-soft) text-(--accent)"
+            aria-hidden
+          >
+            <Icon name="sparkles" size={17} />
           </span>
+          <div className="leading-tight">
+            <p className="font-display text-sm font-semibold text-ink">
+              Assistente do imóvel
+            </p>
+            <p className="text-[11px] text-muted">
+              Dúvidas sobre o imóvel e a região
+            </p>
+          </div>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label="Fechar chat"
-          className="rounded-full p-1 text-muted hover:text-ink"
+          className="rounded-full p-1.5 text-muted transition-colors hover:bg-paper hover:text-ink"
         >
           <Icon name="close" size={18} />
         </button>
@@ -87,7 +98,7 @@ export function ChatPanel({
               key={message.id}
               role={message.role === "user" ? "user" : "assistant"}
             >
-              {messageText(message)}
+              <RichText text={messageText(message)} />
               {isLast && isStreamingReply ? <StreamingCursor /> : null}
             </ChatBubble>
           );
@@ -99,14 +110,14 @@ export function ChatPanel({
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-1.5 border-t border-line px-4 py-2">
+      <div className="grid grid-cols-2 gap-2 bg-paper px-4 pt-1 pb-3">
         {SUGGESTED_QUESTIONS.map((question) => (
           <button
             key={question}
             type="button"
             disabled={!canSend}
             onClick={() => send(question)}
-            className="rounded-full border border-line bg-paper px-2.5 py-1 text-xs text-ink/80 disabled:opacity-50"
+            className="rounded-full border border-transparent bg-(--accent-soft) px-3 py-1.5 text-center text-xs font-medium leading-tight text-(--accent) transition-colors hover:border-(--accent) disabled:opacity-50"
           >
             {question}
           </button>
