@@ -5,9 +5,15 @@ import type { LanguageModelV4StreamPart } from "@ai-sdk/provider";
 // confirmado no Task 1 e compartilhado por todo mock que precisa emitir um
 // objeto pronto através da máquina real de streamObject.
 export function objectChunks(obj: unknown): LanguageModelV4StreamPart[] {
+  return textChunks(JSON.stringify(obj));
+}
+
+// Mesmo formato de objectChunks, mas para texto puro (streamText),
+// usado pelo mock de chatModel.
+export function textChunks(text: string): LanguageModelV4StreamPart[] {
   return [
     { type: "text-start", id: "1" },
-    { type: "text-delta", id: "1", delta: JSON.stringify(obj) },
+    { type: "text-delta", id: "1", delta: text },
     { type: "text-end", id: "1" },
     {
       type: "finish",
