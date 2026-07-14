@@ -27,6 +27,10 @@ import {
   MessageCircle,
   Send,
   X,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Check,
   type LucideIcon,
 } from "lucide-react";
 
@@ -59,6 +63,10 @@ export const ICONS = {
   chat: MessageCircle,
   send: Send,
   close: X,
+  retry: RotateCcw,
+  "chevron-left": ChevronLeft,
+  "chevron-right": ChevronRight,
+  check: Check,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
