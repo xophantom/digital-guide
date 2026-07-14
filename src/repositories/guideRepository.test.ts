@@ -45,18 +45,31 @@ beforeEach(async () => {
 });
 
 describe("guideRepository", () => {
-  it("claim só é vencido por um chamador concorrente", async () => {
+  it("claimForGeneration: só um vence quando não há linha", async () => {
     const repo = createGuideRepository(db);
     const [a, b] = await Promise.all([
-      repo.claim(propertyId),
-      repo.claim(propertyId),
+      repo.claimForGeneration(propertyId),
+      repo.claimForGeneration(propertyId),
     ]);
     expect([a, b].filter(Boolean)).toHaveLength(1);
   });
 
+  it("claimForGeneration: revence quando o status é failed", async () => {
+    const repo = createGuideRepository(db);
+    await repo.claimForGeneration(propertyId);
+    await repo.fail(propertyId, "erro");
+    expect(await repo.claimForGeneration(propertyId)).toBe(true);
+  });
+
+  it("claimForGeneration: perde quando já está pending recente", async () => {
+    const repo = createGuideRepository(db);
+    await repo.claimForGeneration(propertyId);
+    expect(await repo.claimForGeneration(propertyId)).toBe(false);
+  });
+
   it("save grava status ready e get devolve o guia", async () => {
     const repo = createGuideRepository(db);
-    await repo.claim(propertyId);
+    await repo.claimForGeneration(propertyId);
     await repo.save(propertyId, guide, "claude-opus-4-8");
     const record = await repo.get(propertyId);
     expect(record?.status).toBe("ready");
@@ -65,7 +78,7 @@ describe("guideRepository", () => {
 
   it("fail grava status failed", async () => {
     const repo = createGuideRepository(db);
-    await repo.claim(propertyId);
+    await repo.claimForGeneration(propertyId);
     await repo.fail(propertyId, "timeout");
     const record = await repo.get(propertyId);
     expect(record?.status).toBe("failed");

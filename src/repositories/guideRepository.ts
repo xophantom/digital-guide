@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, or, and, lt } from "drizzle-orm";
 import type { RepoDb } from "@/src/db/client";
 import { experienceGuides } from "@/src/db/schema";
 import type { ExperienceGuide, GuideStatus } from "@/src/domain/guide";
@@ -34,14 +34,22 @@ export function createGuideRepository(db: RepoDb) {
       return { status: row.status, guide };
     },
 
-    // Claim atômico: só um chamador insere a linha 'pending'.
-    async claim(propertyId: string): Promise<boolean> {
-      const inserted = await db
+    // Claim atômico: vence se a linha não existe, está 'failed' ou 'pending' travada (crash/timeout).
+    async claimForGeneration(propertyId: string): Promise<boolean> {
+      const staleThreshold = new Date(Date.now() - 90_000);
+      const rows = await db
         .insert(experienceGuides)
-        .values({ propertyId, status: "pending" })
-        .onConflictDoNothing({ target: experienceGuides.propertyId })
+        .values({ propertyId, status: "pending", claimedAt: new Date() })
+        .onConflictDoUpdate({
+          target: experienceGuides.propertyId,
+          set: { status: "pending", claimedAt: new Date(), error: null },
+          setWhere: or(
+            eq(experienceGuides.status, "failed"),
+            and(eq(experienceGuides.status, "pending"), lt(experienceGuides.claimedAt, staleThreshold)),
+          ),
+        })
         .returning({ propertyId: experienceGuides.propertyId });
-      return inserted.length > 0;
+      return rows.length > 0;
     },
 
     async save(
