@@ -15,10 +15,10 @@ export function ChatFab({ code }: { code: string }) {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-ink px-4 py-3 text-sm font-medium text-paper shadow-2xl"
+      aria-label="Falar com o assistente"
+      className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-2xl transition-transform hover:scale-105"
     >
-      <Icon name="chat" size={18} />
-      Falar com o assistente
+      <Icon name="chat" size={24} />
     </button>
   );
 }
