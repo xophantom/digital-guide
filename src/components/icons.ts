@@ -24,6 +24,9 @@ import {
   ChevronsUpDown,
   Sun,
   Flame,
+  MessageCircle,
+  Send,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +56,9 @@ export const ICONS = {
   elevator: ChevronsUpDown,
   balcony: Sun,
   grill: Flame,
+  chat: MessageCircle,
+  send: Send,
+  close: X,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
