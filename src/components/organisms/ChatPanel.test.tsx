@@ -162,4 +162,26 @@ describe("ChatPanel", () => {
 
     expect(sendMessage).toHaveBeenCalledWith({ text: "Tem estacionamento?" });
   });
+
+  it("mostra bolha de erro + 'Tentar novamente' ao reportar erro; o botão chama regenerate", async () => {
+    const regenerate = vi.fn();
+    useChatMock.mockReturnValue({
+      messages: [
+        { id: "user-1", role: "user", parts: [{ type: "text", text: "Oi" }] },
+      ],
+      sendMessage: vi.fn(),
+      regenerate,
+      status: "error",
+      error: new Error("stream failed"),
+    });
+    const user = userEvent.setup();
+
+    render(<ChatPanel code="FLN001" onClose={vi.fn()} />);
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /tentar novamente/i }),
+    );
+    expect(regenerate).toHaveBeenCalled();
+  });
 });
