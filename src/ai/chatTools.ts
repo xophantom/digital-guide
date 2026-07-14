@@ -11,6 +11,7 @@ export type PropertyFacts = {
   allowPet: boolean;
   smokingPermitted: boolean;
   suitableForChildren: boolean;
+  suitableForBabies: boolean;
   eventsPermitted: boolean;
   accessInstructions: string;
   parking: string | null;
@@ -29,6 +30,7 @@ export function propertyFacts(p: Property): PropertyFacts {
     allowPet: r.allowPet,
     smokingPermitted: r.smokingPermitted,
     suitableForChildren: r.suitableForChildren,
+    suitableForBabies: r.suitableForBabies,
     eventsPermitted: r.eventsPermitted,
     accessInstructions: ac.accessInstructions,
     parking: ac.hasParkingSpot

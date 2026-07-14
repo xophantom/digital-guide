@@ -6,11 +6,17 @@ import {
   toUIMessageStream,
 } from "ai";
 import type { UIMessage } from "ai";
+import { z } from "zod";
 import { buildChatPrompt } from "@/src/ai/prompts/chatPrompt";
 import { buildChatTools } from "@/src/ai/chatTools";
 import type { AIProvider } from "@/src/ai/provider";
 import type { Property } from "@/src/domain/property";
 import type { ExperienceGuide } from "@/src/domain/guide";
+
+// Validação mínima: só garante um array não-vazio de objetos com `role`.
+// NÃO valida a forma completa de UIMessage (parts etc.) da v7 — o objetivo
+// é só evitar 500 com input malformado, não substituir convertToModelMessages.
+const messagesSchema = z.array(z.object({ role: z.string() }).passthrough()).min(1);
 
 export type PropertyRepo = { getByCode(code: string): Promise<Property | null> };
 export type GuideRepo = {
@@ -30,6 +36,11 @@ export async function handleChatRequest({
   guideRepo: GuideRepo;
   provider: AIProvider;
 }): Promise<Response> {
+  const parsedMessages = messagesSchema.safeParse(messages);
+  if (!parsedMessages.success) {
+    return new Response("Mensagens inválidas", { status: 400 });
+  }
+
   const property = await propertyRepo.getByCode(code.toUpperCase());
   if (!property) return new Response("Imóvel não encontrado", { status: 404 });
 

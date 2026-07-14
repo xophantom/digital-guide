@@ -17,6 +17,15 @@ describe("propertyFacts (valor correto por imóvel)", () => {
   it("expõe a senha do WiFi exata", () => {
     expect(propertyFacts(makeProperty()).wifiPassword).toBe("floripa2024");
   });
+  it("FLN001 (suitableForBabies true) indica que é adequado para bebês", () => {
+    expect(propertyFacts(makeProperty()).suitableForBabies).toBe(true);
+  });
+  it("imóvel não adequado para bebês (suitableForBabies false) indica isso", () => {
+    const semBebes = makeProperty({
+      rules: { ...makeProperty().rules, suitableForBabies: false },
+    });
+    expect(propertyFacts(semBebes).suitableForBabies).toBe(false);
+  });
 });
 
 describe("nearbyPlacesResult", () => {

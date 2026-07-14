@@ -70,6 +70,58 @@ function userMessage(text: string): UIMessage {
   return { id: "1", role: "user", parts: [{ type: "text", text }] };
 }
 
+describe("handleChatRequest (validação do body)", () => {
+  it("retorna 400 quando messages está ausente", async () => {
+    const propertyRepo = { getByCode: vi.fn() };
+    const guideRepo = { get: vi.fn() };
+
+    const response = await handleChatRequest({
+      code: "FLN001",
+      // @ts-expect-error -- simula body malformado (messages ausente)
+      messages: undefined,
+      propertyRepo,
+      guideRepo,
+      provider: getAIProvider(),
+    });
+
+    expect(response.status).toBe(400);
+    expect(propertyRepo.getByCode).not.toHaveBeenCalled();
+  });
+
+  it("retorna 400 quando messages não é um array", async () => {
+    const propertyRepo = { getByCode: vi.fn() };
+    const guideRepo = { get: vi.fn() };
+
+    const response = await handleChatRequest({
+      code: "FLN001",
+      // @ts-expect-error -- simula body malformado (messages não é array)
+      messages: { role: "user" },
+      propertyRepo,
+      guideRepo,
+      provider: getAIProvider(),
+    });
+
+    expect(response.status).toBe(400);
+    expect(propertyRepo.getByCode).not.toHaveBeenCalled();
+  });
+
+  it("retorna 400 quando messages é um array vazio", async () => {
+    const propertyRepo = { getByCode: vi.fn() };
+    const guideRepo = { get: vi.fn() };
+
+    const response = await handleChatRequest({
+      code: "FLN001",
+      messages: [],
+      propertyRepo,
+      guideRepo,
+      provider: getAIProvider(),
+    });
+
+    expect(response.status).toBe(400);
+    expect(propertyRepo.getByCode).not.toHaveBeenCalled();
+  });
+});
+
 describe("handleChatRequest", () => {
   it("retorna 404 quando o código não existe", async () => {
     const propertyRepo = { getByCode: vi.fn().mockResolvedValue(null) };

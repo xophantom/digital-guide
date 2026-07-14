@@ -10,7 +10,13 @@ export async function POST(
   { params }: { params: Promise<{ code: string }> },
 ) {
   const { code } = await params;
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  let body: { messages: UIMessage[] };
+  try {
+    body = await req.json();
+  } catch {
+    return new Response("Requisição inválida", { status: 400 });
+  }
+  const { messages } = body;
   return handleChatRequest({
     code,
     messages,
