@@ -38,10 +38,10 @@ describe("organismos do guia", () => {
     expect(screen.getByText("Ana Paula")).toBeInTheDocument();
     expect(screen.getByText(/Rua Lauro Linhares, 589/i)).toBeInTheDocument();
     expect(screen.getByText(/88036-001/)).toBeInTheDocument();
-    const maps = screen.getByRole("link", { name: /abrir no maps/i });
-    expect(maps).toHaveAttribute(
-      "href",
-      expect.stringContaining("google.com/maps"),
+    const mapEmbed = screen.getByTitle(/mapa/i);
+    expect(mapEmbed).toHaveAttribute(
+      "src",
+      expect.stringContaining("output=embed"),
     );
   });
 });
