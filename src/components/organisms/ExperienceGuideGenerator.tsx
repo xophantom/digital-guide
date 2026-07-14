@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useObject } from "@ai-sdk/react";
 import type { DeepPartial } from "ai";
 import {
@@ -71,9 +71,19 @@ function PartialExperienceGuide({ partial }: { partial: PartialGuide }) {
 }
 
 export function ExperienceGuideGenerator({ code }: { code: string }) {
+  // O route handler devolve HTTP 200 e faz streaming de texto puro
+  // (toTextStreamResponse); se a chamada ao model falhar ou a validação do
+  // schema falhar após texto parcial, o chunk de erro é descartado
+  // silenciosamente pelo protocolo de text stream — error nunca dispara e
+  // submit() nunca rejeita. onFinish é o único sinal confiável de que o
+  // stream terminou sem produzir um objeto válido.
+  const [failed, setFailed] = useState(false);
   const { object, submit, error } = useObject({
     api: `/api/properties/${code}/guide`,
     schema: experienceGuideSchema,
+    onFinish: ({ object: finalObject, error: finishError }) => {
+      if (!finalObject || finishError) setFailed(true);
+    },
   });
 
   useEffect(() => {
@@ -81,7 +91,7 @@ export function ExperienceGuideGenerator({ code }: { code: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- dispara só na 1ª visita; submit muda de referência a cada render.
   }, []);
 
-  if (error) {
+  if (error || failed) {
     return (
       <section>
         <SectionHeader
@@ -94,7 +104,10 @@ export function ExperienceGuideGenerator({ code }: { code: string }) {
         </div>
         <button
           type="button"
-          onClick={() => submit(undefined)}
+          onClick={() => {
+            setFailed(false);
+            submit(undefined);
+          }}
           className="mt-3 rounded-full bg-(--accent) px-4 py-2 text-xs font-semibold text-white"
         >
           Tentar de novo
