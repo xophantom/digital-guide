@@ -9,7 +9,7 @@ export function ContactSection({ property }: { property: Property }) {
   const line1 = `${ad.street}, ${ad.number}${
     ad.complement ? ` · ${ad.complement}` : ""
   }`;
-  const line2 = `${ad.neighborhood}, ${ad.city} — ${ad.state}`;
+  const line2 = `${ad.neighborhood}, ${ad.city} — ${ad.state} · CEP ${ad.postalCode}`;
   return (
     <section>
       <SectionHeader icon="phone" title="Contato" />

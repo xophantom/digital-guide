@@ -25,16 +25,18 @@ describe("organismos do guia", () => {
     expect(screen.getByText("floripa2024")).toBeInTheDocument();
   });
 
-  it("RulesSection reflete as regras (sem pets, não fumantes)", () => {
+  it("RulesSection reflete as regras (sem pets, não fumantes, festas/eventos)", () => {
     render(<RulesSection property={property} />);
     expect(screen.getByText(/sem pets/i)).toBeInTheDocument();
     expect(screen.getByText(/não fumantes/i)).toBeInTheDocument();
     expect(screen.getByText(/check-in 15:00/i)).toBeInTheDocument();
+    expect(screen.getByText(/sem festas\/eventos/i)).toBeInTheDocument();
   });
 
-  it("ContactSection mostra anfitrião e endereço", () => {
+  it("ContactSection mostra anfitrião e endereço completo (com CEP)", () => {
     render(<ContactSection property={property} />);
     expect(screen.getByText("Ana Paula")).toBeInTheDocument();
     expect(screen.getByText(/Rua Lauro Linhares, 589/i)).toBeInTheDocument();
+    expect(screen.getByText(/88036-001/)).toBeInTheDocument();
   });
 });
